@@ -248,11 +248,11 @@ namespace ProjectTest.Application.Services
             var tarefas = await _uow.TarefaRepository.GetTarefasConcluidasComUsuarioAsync(dataLimite);
 
             var relatorio = tarefas
-                .GroupBy(t => new { t.UpdatedByUserId, t.Usuario })
+                .GroupBy(t => t.UpdatedByUserId)
                 .Select(g => new RelatorioDesempenhoDto
                 {
-                    UsuarioId = g.Key.UpdatedByUserId,
-                    NomeUsuario = g.Key.Usuario?.Nome ?? "Desconhecido",
+                    UsuarioId = g.Key,
+                    NomeUsuario = g.FirstOrDefault()?.Usuario?.Nome ?? "Desconhecido",
                     TotalTarefasConcluidas = g.Count()
                 })
                 .ToList();
