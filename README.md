@@ -14,17 +14,11 @@ AutoMapper: Utilizado para mapeamento entre objetos de transferência de dados e
 
 FluentValidation: Para validação das requisições recebidas.
 
-Bogus: Para gerar dados de teste.
-
 XUnit: Framework de testes unitários utilizado para desenvolvimento orientado a testes.
 
 FluentAssertions: Utilizado para escrever asserções de teste legíveis e de fácil manutenção.
 
-NSubstitute: Biblioteca de mocking usada para criar substituições de interfaces durante os testes.
-
 Serilog: Biblioteca de logging utilizada para rastrear as atividades da aplicação.
-
-Docker: O projeto pode ser containerizado para implantação usando Docker.
 
 Swagger: Integrado para documentação e testes da API.
 
@@ -56,6 +50,4 @@ git clone https://github.com/eridanicampos/eclipseworks.git
 
 Certifique-se de ter a versão mais recente do SDK .NET 8 instalada.
 
-Execute docker-compose up para iniciar a aplicação em um container Docker.
-
-Acesse o Swagger em http://localhost:5000/swagger para interagir com a API.
+Acesse o Swagger em http://localhost:xxxx/swagger para interagir com a API.
