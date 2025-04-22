@@ -1,8 +1,8 @@
-Projeto AmbevTech
+Projeto Eclipse Works
 
 Visão Geral
 
-Este projeto é uma API web desenvolvida para a AmbevTech, utilizando um stack tecnológico robusto e moderno, visando eficiência, escalabilidade e facilidade de manutenção. A solução foi projetada com princípios de Domain-Driven Design (DDD) e segue boas práticas como SOLID, MediatR para o padrão CQRS, e o uso de arquitetura dirigida a eventos através de um modelo publisher-subscriber.
+Este projeto é uma API web desenvolvida para a Eclipse Works, utilizando um stack tecnológico robusto e moderno, visando eficiência, escalabilidade e facilidade de manutenção. A solução foi projetada com princípios de Domain-Driven Design (DDD) e segue boas práticas como SOLID, MediatR para o padrão CQRS, e o uso de arquitetura dirigida a eventos através de um modelo publisher-subscriber.
 
 Tecnologias Utilizadas
 
@@ -52,7 +52,7 @@ Como Executar o Projeto
 
 Clone o repositório do GitHub:
 
-git clone https://github.com/eridanicampos/Ambev.git
+git clone https://github.com/eridanicampos/eclipseworks.git
 
 Certifique-se de ter a versão mais recente do SDK .NET 8 instalada.
 
