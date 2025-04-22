@@ -36,6 +36,7 @@
     <Compile Remove="Controllers\EnderecoEntregaController.cs" />
     <Compile Remove="Controllers\PedidoController.cs" />
     <Compile Remove="Controllers\ProdutoController.cs" />
+    <Compile Remove="Controllers\UsuarioController.cs" />
   </ItemGroup>
 
   <ItemGroup>

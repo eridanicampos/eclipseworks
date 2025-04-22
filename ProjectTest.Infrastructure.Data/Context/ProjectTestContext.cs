@@ -25,8 +25,10 @@ namespace ProjectTest.Infrastructure.Data.Context
         {
             modelBuilder.ApplyConfiguration(new UsuarioMap());
             modelBuilder.ApplyConfiguration(new AcessoUsuarioMap());            
-            modelBuilder.ApplyConfiguration(new VendaMap());
-            modelBuilder.ApplyConfiguration(new ItemVendaMap());
+            modelBuilder.ApplyConfiguration(new ComentarioMap());
+            modelBuilder.ApplyConfiguration(new HistoricoAlteracaoMap());
+            modelBuilder.ApplyConfiguration(new ProjetoMap());
+            modelBuilder.ApplyConfiguration(new TarefaMap());
 
             OnModelCreatingPartial(modelBuilder);
         }

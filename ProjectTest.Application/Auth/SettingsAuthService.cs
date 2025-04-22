@@ -41,6 +41,8 @@ namespace ProjectTest.Application.Auth
                     new Claim("id", user.Id.ToString()),
                     new Claim("name", user.Nome),
                     new Claim("email", user.Email),
+                    new Claim(ClaimTypes.Role, user.Role)
+
 
                 }),
                 Expires = DateTime.UtcNow.AddHours(double.Parse(ExpirationHours)),
@@ -76,6 +78,8 @@ namespace ProjectTest.Application.Auth
                     Id = Guid.Parse(jwtToken.Claims.First(x => x.Type == "id").Value),
                     Nome = jwtToken.Claims.First(x => x.Type == "name").Value,
                     Email = jwtToken.Claims.First(x => x.Type == "email").Value,
+                    Role = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value
+
                 };
 
                 var userContext = new UserContext

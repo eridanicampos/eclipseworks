@@ -146,6 +146,11 @@ namespace ProjectTest.Infrastructure.Data.Repositories.Common
             _dbContext.Entry(entity).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync();
         }
+        public virtual async Task UpdateNotSaveAsync(TEntity entity)
+        {
+            _dbContext.Entry(entity).CurrentValues.SetValues(entity);
+            _dbContext.Entry(entity).State = EntityState.Modified;
+        }
         public virtual async Task<List<TEntity>> UpdateListAsync(List<TEntity> entities)
         {
             await Task.Run(() => _dbContext.Set<TEntity>().UpdateRange(entities));

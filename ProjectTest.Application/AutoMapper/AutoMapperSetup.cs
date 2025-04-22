@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
-using ProjectTest.Application.Compra.Commands.CreateCompra;
-using ProjectTest.Application.Compra.Commands.UpdateCompra;
-using ProjectTest.Application.DTO.ItemVenda;
+using ProjectTest.Application.DTO;
+using ProjectTest.Application.DTO.Comentarios;
+using ProjectTest.Application.DTO.Projetos;
 using ProjectTest.Application.DTO.User;
-using ProjectTest.Application.DTO.Venda;
 using ProjectTest.Domain.Entities;
 
 namespace ProjectTest.Application.AutoMapper
@@ -17,16 +16,30 @@ namespace ProjectTest.Application.AutoMapper
             CreateMap<UserDTO, Usuario>();
             CreateMap<UserModifyDTO, Usuario>();
             CreateMap<UserParmersDTO, Usuario>();
-            CreateMap<CreateCompraCommand, Venda>();
-            CreateMap<CreateItemVendaDTO, Domain.Entities.ItemVenda>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ItemId))
-            .ForMember(dest => dest.NomeProduto, opt => opt.MapFrom(src => src.NomeProduto));
+            CreateMap<ProjetoDto, Projeto>();
+            CreateMap<TarefaDto, Tarefa>();
+            CreateMap<ComentarioDTO, Comentario>();
+            CreateMap<UpdateProjetoDto, Projeto>();
 
-            CreateMap<UpdateCompraCommand, Venda>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.VendaId))
-                .ForMember(dest => dest.Itens, opt => opt.MapFrom(src => src.Itens));
+            CreateMap<CreateProjetoDto, Projeto>();
 
-            CreateMap<CreateItemVendaDTO, Domain.Entities.ItemVenda>().ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ItemId));
+            CreateMap<CreateTarefaDto, Tarefa>()
+                .ConstructUsing(dto => new Tarefa(dto.Prioridade))
+                .ForMember(dest => dest.Titulo, opt => opt.MapFrom(src => src.Titulo))
+                .ForMember(dest => dest.Descricao, opt => opt.MapFrom(src => src.Descricao))
+                .ForMember(dest => dest.DataVencimento, opt => opt.MapFrom(src => src.DataVencimento))
+                .ForMember(dest => dest.Comentarios, opt => opt.MapFrom(src => src.Comentarios));
+
+            CreateMap<CreateComentarioDto, Comentario>();
+            CreateMap<UpdateComentarioDto, Comentario>();
+
+
+            CreateMap<UpdateTarefaDto, Tarefa>()
+                .ForMember(dest => dest.Prioridade, opt => opt.Ignore())
+                .ForMember(dest => dest.Comentarios, opt => opt.MapFrom(src => src.Comentarios))
+                .ForMember(dest => dest.UsuarioId, opt => opt.MapFrom(src => src.UsuarioId));
+
+
             #endregion
 
             #region DomaintoDTO
@@ -34,10 +47,15 @@ namespace ProjectTest.Application.AutoMapper
             CreateMap<Usuario, UserDTO>();
             CreateMap<Usuario, UserModifyDTO>();
             CreateMap<Usuario, UserParmersDTO>();
-            CreateMap<Venda, VendaDTO>();
-            CreateMap<Domain.Entities.ItemVenda, ItemVendaDTO>()
-    .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-    .ForMember(dest => dest.NomeProduto, opt => opt.MapFrom(src => src.NomeProduto));
+
+            CreateMap<Projeto, ProjetoDto>()
+                .ForMember(dest => dest.Tarefas, opt => opt.MapFrom(src => src.Tarefas)); // Se ProjetoDto tiver a lista
+
+            CreateMap<Tarefa, TarefaDto>()
+                .ForMember(dest => dest.NomeProjeto, opt => opt.MapFrom(src => src.Projeto.Nome))
+                .ForMember(dest => dest.Comentarios, opt => opt.MapFrom(src => src.Comentarios));
+
+            CreateMap<Comentario, ComentarioDTO>();
             #endregion
 
         }

@@ -7,8 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Compra\**" />
+    <Compile Remove="DTO\Venda\**" />
+    <Compile Remove="ItemVenda\**" />
     <Compile Remove="Produtos\**" />
+    <EmbeddedResource Remove="Compra\**" />
+    <EmbeddedResource Remove="DTO\Venda\**" />
+    <EmbeddedResource Remove="ItemVenda\**" />
     <EmbeddedResource Remove="Produtos\**" />
+    <None Remove="Compra\**" />
+    <None Remove="DTO\Venda\**" />
+    <None Remove="ItemVenda\**" />
     <None Remove="Produtos\**" />
   </ItemGroup>
 
@@ -16,8 +25,8 @@
     <Compile Remove="Interfaces\IProdutoService.cs" />
     <Compile Remove="Services\EnderecoEntregaService.cs" />
     <Compile Remove="Services\PedidoService.cs" />
-    <Compile Remove="Services\ProdutoService.cs" />
-    <Compile Remove="Services\TarefaService.cs" />
+    <Compile Remove="Services\VendaService.cs" />
+    <Compile Remove="Validatiors\VendaValidator .cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,14 +43,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ProjectTest.Domain\ProjectTest.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ItemVenda\Commands\DeleteItemVenda\" />
-    <Folder Include="ItemVenda\Commands\UpdateItemVenda\" />
-    <Folder Include="ItemVenda\Queries\GetAllItemVenda\" />
-    <Folder Include="ItemVenda\Queries\GetItemVendaById\" />
-    <Folder Include="Compra\Queries\GetComprayId\" />
   </ItemGroup>
 
 </Project>

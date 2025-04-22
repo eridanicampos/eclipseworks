@@ -8,9 +8,8 @@ namespace ProjectTest.Domain.Entities.Enum
 {
     public enum EStatusTarefa
     {
-        Pendente,
-        EmAndamento,
-        Concluida,
-        Cancelada
+        Pendente = 1,
+        EmAndamento = 2,
+        Concluida = 3
     }
 }

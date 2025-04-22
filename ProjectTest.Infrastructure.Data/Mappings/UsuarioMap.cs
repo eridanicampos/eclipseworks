@@ -15,9 +15,40 @@ namespace ProjectTest.Infrastructure.Data.Mappings
         {
             builder.ToTable("usuario");
 
-            builder.Property(x => x.Nome).HasColumnName("nome").HasMaxLength(200).IsRequired();
-            builder.Property(x => x.Senha).HasColumnName("senha").HasMaxLength(200).IsRequired();
-            builder.Property(x => x.Email).HasColumnName("email").HasMaxLength(200).IsRequired();
+            builder.Property(u => u.Nome)
+                .IsRequired()
+                .HasMaxLength(200)
+                .HasColumnName("nome");
+
+
+            builder.Property(u => u.Senha)
+                .IsRequired()
+                .HasMaxLength(200)
+                .HasColumnName("senha");
+
+
+            builder.Property(u => u.Email)
+                .IsRequired()
+                .HasMaxLength(200)
+                .HasColumnName("email");
+
+            builder.Property(u => u.Role)
+                .IsRequired()
+                .HasMaxLength(200)
+                .HasColumnName("role");
+
+            builder.HasIndex(u => u.Email) 
+               .IsUnique();
+
+            builder.HasMany(u => u.Projetos)
+                .WithOne(p => p.Usuario)
+                .HasForeignKey(p => p.UsuarioId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(u => u.AcessosUsuarios)
+                .WithOne(a => a.Usuario)
+                .HasForeignKey(a => a.UsuarioId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             new EntityGuidMap<Usuario>().AddCommonConfiguration(builder);
         }

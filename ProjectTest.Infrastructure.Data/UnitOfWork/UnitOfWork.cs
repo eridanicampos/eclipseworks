@@ -2,6 +2,7 @@
 using ProjectTest.Domain.Interfaces.Common;
 using ProjectTest.Domain.Interfaces.Repository;
 using ProjectTest.Infrastructure.Data.Context;
+using ProjectTest.Infrastructure.Data.Repositories;
 using System;
 using System.Threading.Tasks;
 
@@ -21,8 +22,10 @@ namespace ProjectTest.Infrastructure.Data.UnitOfWork
 
         public IUserRepository UserRepository => _services.GetRequiredService<IUserRepository>();
         public IAcessoUsuarioRepository AcessoUsuarioRepository => _services.GetRequiredService<IAcessoUsuarioRepository>();
-        public IVendaRepository VendaRepository => _services.GetRequiredService<IVendaRepository>();
-        public IItemVendaRepository ItemVendaRepository => _services.GetRequiredService<IItemVendaRepository>();
+        public ITarefaRepository TarefaRepository => _services.GetRequiredService<ITarefaRepository>();
+        public IProjetoRepository ProjetoRepository => _services.GetRequiredService<IProjetoRepository>();
+        public IHistoricoAlteracaoRepository HistoricoAlteracaoRepository => _services.GetRequiredService<IHistoricoAlteracaoRepository>();
+        public IComentarioRepository ComentarioRepository => _services.GetRequiredService<IComentarioRepository>();
 
         public async Task CommitAsync()
         {

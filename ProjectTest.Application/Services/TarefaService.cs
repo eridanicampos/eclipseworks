@@ -1,22 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
-using ProjectTest.Application.Auth;
-using ProjectTest.Application.DTO.Pedido;
-using ProjectTest.Application.DTO.Tarefa;
-using ProjectTest.Application.DTO.User;
+using ProjectTest.Application.DTO;
 using ProjectTest.Application.Interfaces;
 using ProjectTest.Domain.Entities;
 using ProjectTest.Domain.Entities.Enum;
 using ProjectTest.Domain.Interfaces;
 using ProjectTest.Domain.Interfaces.Common;
-using ProjectTest.Domain.Interfaces.Repository;
-using System;
-using System.Collections.Generic;
+using ProjectTest.Domain.Validators;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ProjectTest.Application.Services
 {
@@ -35,14 +26,14 @@ namespace ProjectTest.Application.Services
             this._logger = logger;
         }
 
-        public async Task<List<TarefaDTO>> GetAsync()
+        public async Task<List<Tarefa>> GetAllAsync()
         {
             try
             {
                 _logger.LogInformation("Buscando todas as tarefas...");
-                var _entities = await _uow.TarefaRepository.GetAllAsync();
+                var _entities = await _uow.TarefaRepository.GetAllAsyncWithChildren(x => x.Projeto, x => x.Comentarios, x => x.Usuario);
                 _logger.LogInformation($"Total de {_entities.Count} tarefas encontradas.");
-                return _mapper.Map<List<TarefaDTO>>(_entities);
+                return _entities;
             }
             catch (Exception ex)
             {
@@ -51,20 +42,40 @@ namespace ProjectTest.Application.Services
             }
         }
 
-        public async Task<TarefaDTO> CreateAsync(TarefaParamDTO paramDTO)
+        public async Task<List<Tarefa>> GetTarefaByProjetoIdAsync(Guid projetoId)
+        {
+            try
+            {
+                _logger.LogInformation("Buscando todas as tarefas do Projeto - " + projetoId.ToString());
+                var _entities = await _uow.TarefaRepository.GetTarefaByProjetoIdAsync(projetoId);
+                _logger.LogInformation($"Total de {_entities.Count} tarefas encontradas.");
+                return _entities;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao buscar todas as tarefas");
+                throw;
+            }
+        }
+
+        public async Task<Tarefa> CreateAsync(Tarefa tarefa)
         {
             try
             {
                 _logger.LogInformation("Criando uma nova tarefa...");
-                var _entity = _mapper.Map<Tarefa>(paramDTO);
-                _entity.UsuarioId = Guid.Parse(_currentUser.UserId);
-                _entity.Status = EStatusTarefa.Pendente;
+                var validator = new TarefaValidator();
+                var validationResult = await validator.ValidateAsync(tarefa);
 
-                var entitySave = await _uow.TarefaRepository.AddAndSaveAsync(_entity);
-                var objDTO = _mapper.Map<TarefaDTO>(entitySave);
+                if (!validationResult.IsValid)
+                {
+                    var errorMessages = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
+                    throw new ValidationException(errorMessages);
+                }
 
-                _logger.LogInformation($"Tarefa criada com sucesso. ID: {_entity.Id}");
-                return objDTO;
+                await _uow.TarefaRepository.AddAndSaveAsync(tarefa);
+
+                _logger.LogInformation($"Tarefa criada com sucesso. ID: {tarefa.Id}");
+                return tarefa;
             }
             catch (Exception ex)
             {
@@ -72,8 +83,115 @@ namespace ProjectTest.Application.Services
                 throw;
             }
         }
+        public async Task<Tarefa> UpdateAsync(Tarefa tarefaEditada, Guid usuarioId)
+        {
+            var tarefaAtual = await _uow.TarefaRepository
+                .GetByGuidAsyncWithChildren(tarefaEditada.Id, t => t.Comentarios);
 
-        public async Task<TarefaDTO> GetById(string id)
+            if (tarefaAtual == null)
+                throw new Exception("Tarefa não encontrada!");
+
+            _logger.LogInformation($"Atualizando a tarefa com ID: {tarefaEditada.Id}");
+
+
+            var validator = new TarefaValidator();
+            var validation = await validator.ValidateAsync(tarefaEditada);
+            if (!validation.IsValid)
+                throw new ValidationException(string.Join("; ", validation.Errors.Select(e => e.ErrorMessage)));
+
+            var camposAlterados = new List<string>();
+            if (tarefaAtual.Titulo != tarefaEditada.Titulo) camposAlterados.Add(nameof(tarefaAtual.Titulo));
+            if (tarefaAtual.Descricao != tarefaEditada.Descricao) camposAlterados.Add(nameof(tarefaAtual.Descricao));
+            if (tarefaAtual.Status != tarefaEditada.Status) camposAlterados.Add(nameof(tarefaAtual.Status));
+            if (tarefaAtual.DataVencimento != tarefaEditada.DataVencimento) camposAlterados.Add(nameof(tarefaAtual.DataVencimento));
+
+            var comentariosAtuais = tarefaAtual.Comentarios?.Select(c => c.Texto).ToList() ?? new();
+            var comentariosEditados = tarefaEditada.Comentarios?.Select(c => c.Texto).ToList() ?? new();
+
+            var adicionados = comentariosEditados.Except(comentariosAtuais).ToList();
+            var removidos = comentariosAtuais.Except(comentariosEditados).ToList();
+
+            if (adicionados.Any()) camposAlterados.Add("ComentarioAdicionado");
+            if (removidos.Any()) camposAlterados.Add("ComentarioRemovido");
+
+            var historico = new HistoricoAlteracao
+            {
+                TarefaId = tarefaAtual.Id,
+                UsuarioId = usuarioId,
+                Tipo = ETipoAllteracao.Alteracao,
+                CamposAlterados = string.Join(",", camposAlterados),
+                JsonTarefaAntesAlterada = System.Text.Json.JsonSerializer.Serialize(new
+                {
+                    tarefaAtual.Titulo,
+                    tarefaAtual.Descricao,
+                    tarefaAtual.Status,
+                    tarefaAtual.DataVencimento,
+                    Comentarios = comentariosAtuais
+                }),
+                JsonTarefaDepoisAlterada = System.Text.Json.JsonSerializer.Serialize(new
+                {
+                    tarefaEditada.Titulo,
+                    tarefaEditada.Descricao,
+                    tarefaEditada.Status,
+                    tarefaEditada.DataVencimento,
+                    Comentarios = comentariosEditados
+                }),
+                DataAlteracao = DateTime.UtcNow
+            };
+
+            tarefaAtual.Titulo = tarefaEditada.Titulo;
+            tarefaAtual.Descricao = tarefaEditada.Descricao;
+            tarefaAtual.DataVencimento = tarefaEditada.DataVencimento;
+            tarefaAtual.Status = tarefaEditada.Status;
+            tarefaAtual.UsuarioId = tarefaEditada.UsuarioId;
+
+            tarefaAtual.Comentarios = tarefaEditada.Comentarios;
+
+            await _uow.TarefaRepository.UpdateNotSaveAsync(tarefaAtual);
+            await _uow.HistoricoAlteracaoRepository.AddAsync(historico);
+
+            await _uow.CommitAsync();
+
+            _logger.LogInformation($"Tarefa com ID: {tarefaEditada.Id} atualizada com sucesso.");
+            return tarefaAtual;
+        }
+
+
+        public async Task<bool> RemoverTarefaDoProjetoAsync(Guid tarefaId, Guid projetoId, Guid usuarioId)
+        {
+            _logger.LogInformation($"Removendo tarefa {tarefaId} do projeto {projetoId}");
+
+            var projeto = await _uow.ProjetoRepository.GetByGuidAsync(projetoId);
+            if (projeto == null)
+                throw new Exception("Projeto não encontrado");
+
+            var tarefa = projeto.Tarefas?.FirstOrDefault(t => t.Id == tarefaId);
+            if (tarefa == null)
+                throw new Exception("Tarefa não encontrada no projeto");
+
+            projeto.Tarefas.Remove(tarefa);
+
+            var historico = new HistoricoAlteracao
+            {
+                TarefaId = tarefa.Id,
+                Tipo = ETipoAllteracao.Exclusao,
+                UsuarioId = usuarioId,
+                CamposAlterados = "*",
+                JsonTarefaAntesAlterada = System.Text.Json.JsonSerializer.Serialize(tarefa),
+                JsonTarefaDepoisAlterada = null,
+                DataAlteracao = DateTime.UtcNow
+            };
+
+            await _uow.HistoricoAlteracaoRepository.AddAndSaveAsync(historico);
+
+            await _uow.ProjetoRepository.UpdateAsync(projeto);
+
+            _logger.LogInformation($"Tarefa {tarefaId} removida com sucesso do projeto {projetoId}");
+
+            return true;
+
+        }
+        public async Task<Tarefa> GetById(string id)
         {
             try
             {
@@ -84,14 +202,14 @@ namespace ProjectTest.Application.Services
                 }
 
                 _logger.LogInformation($"Buscando a tarefa com ID: {id}");
-                var _entity = await _uow.TarefaRepository.GetByGuidAsync(guidId);
+                var _entity = await _uow.TarefaRepository.GetByGuidAsyncWithChildren(guidId, x => x.Projeto, x => x.Usuario, x => x.Comentarios);
                 if (_entity == null)
                 {
                     _logger.LogWarning($"Tarefa não encontrada para o ID: {id}");
                     throw new Exception("Tarefa não encontrada!");
                 }
 
-                return _mapper.Map<TarefaDTO>(_entity);
+                return _entity;
             }
             catch (Exception ex)
             {
@@ -100,57 +218,20 @@ namespace ProjectTest.Application.Services
             }
         }
 
-        public async Task<bool> UpdateAsync(TarefaModifyDTO paramDTO)
+
+        public async Task<bool> DeleteAsync(Guid id)
         {
             try
             {
-                if (paramDTO.Id == Guid.Empty)
-                {
-                    _logger.LogWarning("ID da tarefa é inválido.");
-                    throw new Exception("ID é inválido");
-                }
-
-                _logger.LogInformation($"Atualizando a tarefa com ID: {paramDTO.Id}");
-                var _entity = await _uow.TarefaRepository.GetByGuidAsync(paramDTO.Id);
-                if (_entity == null)
-                {
-                    _logger.LogWarning($"Tarefa não encontrada para o ID: {paramDTO.Id}");
-                    throw new Exception("Tarefa não encontrada!");
-                }
-
-                _entity.UsuarioId = Guid.Parse(_currentUser.UserId);
-                _entity = _mapper.Map<TarefaModifyDTO, Tarefa>(paramDTO, _entity);
-
-                await _uow.TarefaRepository.UpdateAsync(_entity);
-                _logger.LogInformation($"Tarefa com ID: {paramDTO.Id} atualizada com sucesso.");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Erro ao atualizar a tarefa com ID: {paramDTO.Id}");
-                throw;
-            }
-        }
-
-        public async Task<bool> DeleteAsync(string id)
-        {
-            try
-            {
-                if (!Guid.TryParse(id, out Guid guidId))
-                {
-                    _logger.LogWarning($"ID inválido para exclusão: {id}");
-                    throw new Exception("ID é inválido");
-                }
-
                 _logger.LogInformation($"Excluindo a tarefa com ID: {id}");
-                var _entity = await _uow.TarefaRepository.GetByGuidAsync(guidId);
+                var _entity = await _uow.TarefaRepository.GetByGuidAsync(id);
                 if (_entity == null)
                 {
                     _logger.LogWarning($"Tarefa não encontrada para o ID: {id}");
                     throw new Exception("Tarefa não encontrada!");
                 }
 
-                await _uow.TarefaRepository.SoftDeleteAsync(guidId);
+                await _uow.TarefaRepository.SoftDeleteAsync(id);
                 _logger.LogInformation($"Tarefa com ID: {id} excluída com sucesso.");
                 return true;
             }
@@ -160,5 +241,24 @@ namespace ProjectTest.Application.Services
                 throw;
             }
         }
+
+        public async Task<List<RelatorioDesempenhoDto>> GetRelatorioDesempenhoAsync()
+        {
+            var dataLimite = DateTime.UtcNow.AddDays(-30);
+            var tarefas = await _uow.TarefaRepository.GetTarefasConcluidasComUsuarioAsync(dataLimite);
+
+            var relatorio = tarefas
+                .GroupBy(t => new { t.UpdatedByUserId, t.Usuario })
+                .Select(g => new RelatorioDesempenhoDto
+                {
+                    UsuarioId = g.Key.UpdatedByUserId,
+                    NomeUsuario = g.Key.Usuario?.Nome ?? "Desconhecido",
+                    TotalTarefasConcluidas = g.Count()
+                })
+                .ToList();
+
+            return relatorio;
+        }
+
     }
 }

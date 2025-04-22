@@ -11,7 +11,10 @@ namespace ProjectTest.Domain.Entities
         public string Nome { get; set; }
         public string Email { get; set; }
         public string Senha { get; set; }
+        public string Role { get; set; }
         public virtual ICollection<AcessoUsuario>? AcessosUsuarios { get; set; }
+        public virtual ICollection<Projeto>? Projetos { get; set; }
+        public virtual ICollection<Tarefa>? Tarefas { get; set; }
 
         public override async Task<(bool isValid, List<string> messages)> Validate()
         {

@@ -10,5 +10,8 @@ namespace ProjectTest.Domain.Interfaces.Repository
 {
     public interface ITarefaRepository : IGenericAsyncRepository<Tarefa>
     {
+        Task<List<Tarefa>> GetTarefaByProjetoIdAsync(Guid projetoId);
+        Task<List<Tarefa>> GetTarefasConcluidasComUsuarioAsync(DateTime dataLimite);
+
     }
 }

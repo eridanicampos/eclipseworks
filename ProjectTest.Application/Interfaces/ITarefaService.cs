@@ -1,24 +1,22 @@
-﻿using ProjectTest.Application.DTO.Pedido;
-using ProjectTest.Application.DTO.Tarefa;
-using ProjectTest.Application.DTO.User;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ProjectTest.Application.DTO;
+using ProjectTest.Domain.Entities;
 
 namespace ProjectTest.Application.Interfaces
 {
     public interface ITarefaService
     {
-        Task<List<TarefaDTO>> GetAsync();
+        Task<List<Tarefa>> GetAllAsync();
 
-        Task<TarefaDTO> CreateAsync(TarefaParamDTO paramDTO);
+        Task<Tarefa> CreateAsync(Tarefa entity);
 
-        Task<TarefaDTO> GetById(string id);
+        Task<Tarefa> GetById(string id);
 
-        Task<bool> UpdateAsync(TarefaModifyDTO paramDTO);
+        Task<Tarefa> UpdateAsync(Tarefa tarefaEditada, Guid usuarioId);
 
-        Task<bool> DeleteAsync(string id);
+        Task<bool> DeleteAsync(Guid id);
+        Task<List<Tarefa>> GetTarefaByProjetoIdAsync(Guid projetoId);
+        Task<bool> RemoverTarefaDoProjetoAsync(Guid tarefaId, Guid projetoId, Guid usuarioId);
+        Task<List<RelatorioDesempenhoDto>> GetRelatorioDesempenhoAsync();
+
     }
 }

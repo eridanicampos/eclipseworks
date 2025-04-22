@@ -10,9 +10,9 @@ using ProjectTest.Domain.Interfaces.Repository;
 using ProjectTest.Infrastructure.Data.Repositories;
 using ProjectTest.Domain.Entities;
 using ProjectTest.Domain.Interfaces;
-using ProjectTest.Domain.Interfaces.Service;
 using ProjectTest.Application.Validators;
 using FluentValidation;
+using ProjectTest.Domain.Validators;
 
 namespace ProjectTest.Infrastructure.Data.Configurations
 {
@@ -45,9 +45,13 @@ namespace ProjectTest.Infrastructure.Data.Configurations
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAcessoUsuarioRepository, AcessoUsuarioRepository>();
             services.AddScoped<ICurrentUserInfo, CurrentUserInfo>();
-            services.AddScoped<IVendaService, VendaService>();
-            services.AddScoped<IVendaRepository, VendaRepository>();
-            services.AddScoped<IItemVendaRepository, ItemVendaRepository>();
+            services.AddScoped<ITarefaRepository, TarefaRepository>();
+            services.AddScoped<IProjetoRepository, ProjetoRepository>();
+            services.AddScoped<IComentarioRepository, ComentarioRepository>(); 
+            services.AddScoped<IHistoricoAlteracaoRepository, HistoricoAlteracaoRepository>();
+            services.AddScoped<ITarefaService, TarefaService>();
+            services.AddScoped<IProjetoService, ProjetoService>();
+
             services.AddTransient<IEventPublisher, EventPublisher>();
 
         }
@@ -58,7 +62,11 @@ namespace ProjectTest.Infrastructure.Data.Configurations
         }
         public static void AddValidators(IServiceCollection services)
         {
-            services.AddValidatorsFromAssemblyContaining<VendaValidator>(); 
+            services.AddValidatorsFromAssemblyContaining<ProjetoValidator>();
+            services.AddValidatorsFromAssemblyContaining<TarefaValidator>();
+            services.AddValidatorsFromAssemblyContaining<ComentarioValidator>();
+            services.AddValidatorsFromAssemblyContaining<UpdateTarefaDtoValidator>();
+
         }
     }
 }

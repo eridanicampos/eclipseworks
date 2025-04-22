@@ -1,18 +1,8 @@
-﻿using AutoMapper;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using ProjectTest.Application.Interfaces;
 using ProjectTest.Domain.Interfaces.Common;
-using ProjectTest.Domain.Interfaces;
-using ProjectTest.Domain.Interfaces.Service;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ProjectTest.Domain.Entities;
 using ProjectTest.Application.Events;
 using FluentValidation;
-using System.ComponentModel.DataAnnotations;
 
 namespace ProjectTest.Application.Services
 {

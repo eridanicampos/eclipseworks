@@ -12,8 +12,9 @@ namespace ProjectTest.Infrastructure.Data.Context
             var optionsBuilder = new DbContextOptionsBuilder<ProjectTestContext>();
 
             var configuration = new ConfigurationBuilder()
-                .SetBasePath(@"C:\_Source\AmbevTech\ProjectTest") 
-                .AddJsonFile("appsettings.json")
+                .SetBasePath(Directory.GetCurrentDirectory())
+                //.SetBasePath(@"C:\_Source\eclipseworks\ProjectTest") 
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
 
             var connectionString = configuration.GetConnectionString("ConnectionString");

@@ -23,6 +23,7 @@ namespace ProjectTest.Domain.Interfaces.Common
         Task<TEntity> AddAsync(TEntity entity);
         Task<List<TEntity>> AddListAsync(List<TEntity> entities);
         Task UpdateAsync(TEntity entity);
+        Task UpdateNotSaveAsync(TEntity entity);
         Task DeleteAsync(TEntity entity);
         Task DeleteAndSaveAsync(TEntity entity);
         Task<TEntity> AddAndSaveAsync(TEntity entity);

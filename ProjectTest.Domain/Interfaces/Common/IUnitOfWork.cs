@@ -14,8 +14,10 @@ namespace ProjectTest.Domain.Interfaces.Common
 
         IUserRepository UserRepository { get; }
         IAcessoUsuarioRepository AcessoUsuarioRepository { get; }
-        IVendaRepository VendaRepository { get; }
-        IItemVendaRepository ItemVendaRepository { get; }
+        IComentarioRepository ComentarioRepository { get; }
+        IHistoricoAlteracaoRepository HistoricoAlteracaoRepository { get; }
+        IProjetoRepository ProjetoRepository { get; }
+        ITarefaRepository TarefaRepository { get; }
 
 
     }

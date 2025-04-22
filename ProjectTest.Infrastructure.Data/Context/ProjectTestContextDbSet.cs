@@ -7,10 +7,10 @@ namespace ProjectTest.Infrastructure.Data.Context
     {
         public virtual DbSet<Usuario> Usuarios { get; set; }
         public virtual DbSet<AcessoUsuario> Acessos { get; set; }
-        public virtual DbSet<Venda> Vendas { get; set; }
-        public virtual DbSet<ItemVenda> ItensVendas { get; set; }
-
-
+        public virtual DbSet<Tarefa> Tarefas { get; set; }
+        public virtual DbSet<HistoricoAlteracao> HistoricoAlteracoes { get; set; }
+        public virtual DbSet<Comentario> Comentarios { get; set; }
+        public virtual DbSet<Projeto> Projetos { get; set; }        
 
     }
 }

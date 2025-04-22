@@ -78,18 +78,12 @@ namespace ProjectTest.Infrastructure.Data.Migrations
                     b.ToTable("acesso_usuario", (string)null);
                 });
 
-            modelBuilder.Entity("ProjectTest.Domain.Entities.ItemVenda", b =>
+            modelBuilder.Entity("ProjectTest.Domain.Entities.Comentario", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
-
-                    b.Property<bool>("Cancelada")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("cancelada");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2")
@@ -112,10 +106,6 @@ namespace ProjectTest.Infrastructure.Data.Migrations
                         .HasColumnName("deleted_by_user_id")
                         .HasComment("The id of the user who did the delete");
 
-                    b.Property<decimal?>("DescontoValorUnitario")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("desconto_valor_unitario");
-
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -123,19 +113,15 @@ namespace ProjectTest.Infrastructure.Data.Migrations
                         .HasColumnName("is_deleted")
                         .HasComment("The field that identifies that the entity was deleted");
 
-                    b.Property<string>("NomeProduto")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("nome_produto");
-
-                    b.Property<Guid>("ProdutoId")
+                    b.Property<Guid>("TarefaId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("produto_id");
+                        .HasColumnName("tarefa_id");
 
-                    b.Property<int>("Quantidade")
-                        .HasColumnType("int")
-                        .HasColumnName("quantidade");
+                    b.Property<string>("Texto")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnName("texto");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime2")
@@ -147,19 +133,254 @@ namespace ProjectTest.Infrastructure.Data.Migrations
                         .HasColumnName("update_by_user_id")
                         .HasComment("The id of the user who did the last modification");
 
-                    b.Property<decimal>("ValorUnitario")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("valor_unitario");
-
-                    b.Property<Guid>("VendaId")
+                    b.Property<Guid>("UsuarioId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("venda_id");
+                        .HasColumnName("usuario_id");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("VendaId");
+                    b.HasIndex("TarefaId");
 
-                    b.ToTable("item_venda", (string)null);
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("comentario", (string)null);
+                });
+
+            modelBuilder.Entity("ProjectTest.Domain.Entities.HistoricoAlteracao", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<string>("CamposAlterados")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("campos_alterados");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at")
+                        .HasComment("When this entity was created in this DB");
+
+                    b.Property<string>("CreatedByUserId")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(100)")
+                        .HasColumnName("created_by_user_id")
+                        .HasComment("The id of the user who did create");
+
+                    b.Property<DateTime>("DataAlteracao")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("data_alteracao");
+
+                    b.Property<DateTime?>("DeleteAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_at")
+                        .HasComment("When this entity was deleted in this DB");
+
+                    b.Property<string>("DeletedByUserId")
+                        .HasColumnType("VARCHAR(100)")
+                        .HasColumnName("deleted_by_user_id")
+                        .HasComment("The id of the user who did the delete");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted")
+                        .HasComment("The field that identifies that the entity was deleted");
+
+                    b.Property<string>("JsonTarefaAntesAlterada")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("json_tarefa_antes_alterada");
+
+                    b.Property<string>("JsonTarefaDepoisAlterada")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("json_tarefa_depois_alterada");
+
+                    b.Property<Guid>("TarefaId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("tarefa_id");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("tipo");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("update_at")
+                        .HasComment("When this entity was modified the last time");
+
+                    b.Property<string>("UpdatedByUserId")
+                        .HasColumnType("VARCHAR(100)")
+                        .HasColumnName("update_by_user_id")
+                        .HasComment("The id of the user who did the last modification");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("usuario_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TarefaId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("historico_alteracao", (string)null);
+                });
+
+            modelBuilder.Entity("ProjectTest.Domain.Entities.Projeto", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at")
+                        .HasComment("When this entity was created in this DB");
+
+                    b.Property<string>("CreatedByUserId")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(100)")
+                        .HasColumnName("created_by_user_id")
+                        .HasComment("The id of the user who did create");
+
+                    b.Property<DateTime?>("DeleteAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_at")
+                        .HasComment("When this entity was deleted in this DB");
+
+                    b.Property<string>("DeletedByUserId")
+                        .HasColumnType("VARCHAR(100)")
+                        .HasColumnName("deleted_by_user_id")
+                        .HasComment("The id of the user who did the delete");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted")
+                        .HasComment("The field that identifies that the entity was deleted");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("nome");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("update_at")
+                        .HasComment("When this entity was modified the last time");
+
+                    b.Property<string>("UpdatedByUserId")
+                        .HasColumnType("VARCHAR(100)")
+                        .HasColumnName("update_by_user_id")
+                        .HasComment("The id of the user who did the last modification");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("usuario_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("projeto", (string)null);
+                });
+
+            modelBuilder.Entity("ProjectTest.Domain.Entities.Tarefa", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at")
+                        .HasComment("When this entity was created in this DB");
+
+                    b.Property<string>("CreatedByUserId")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR(100)")
+                        .HasColumnName("created_by_user_id")
+                        .HasComment("The id of the user who did create");
+
+                    b.Property<DateTime>("DataVencimento")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("data_vencimento");
+
+                    b.Property<DateTime?>("DeleteAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_at")
+                        .HasComment("When this entity was deleted in this DB");
+
+                    b.Property<string>("DeletedByUserId")
+                        .HasColumnType("VARCHAR(100)")
+                        .HasColumnName("deleted_by_user_id")
+                        .HasComment("The id of the user who did the delete");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnName("descricao");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted")
+                        .HasComment("The field that identifies that the entity was deleted");
+
+                    b.Property<string>("Prioridade")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("prioridade");
+
+                    b.Property<Guid>("ProjetoId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("projeto_id");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("titulo");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("update_at")
+                        .HasComment("When this entity was modified the last time");
+
+                    b.Property<string>("UpdatedByUserId")
+                        .HasColumnType("VARCHAR(100)")
+                        .HasColumnName("update_by_user_id")
+                        .HasComment("The id of the user who did the last modification");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("usuario_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjetoId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("tarefa", (string)null);
                 });
 
             modelBuilder.Entity("ProjectTest.Domain.Entities.Usuario", b =>
@@ -209,6 +430,12 @@ namespace ProjectTest.Infrastructure.Data.Migrations
                         .HasColumnType("nvarchar(200)")
                         .HasColumnName("nome");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("role");
+
                     b.Property<string>("Senha")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -227,87 +454,10 @@ namespace ProjectTest.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.ToTable("usuario", (string)null);
-                });
-
-            modelBuilder.Entity("ProjectTest.Domain.Entities.Venda", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id");
-
-                    b.Property<bool>("Cancelada")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("cancelada");
-
-                    b.Property<Guid>("ClienteId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("cliente_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("created_at")
-                        .HasComment("When this entity was created in this DB");
-
-                    b.Property<string>("CreatedByUserId")
-                        .IsRequired()
-                        .HasColumnType("VARCHAR(100)")
-                        .HasColumnName("created_by_user_id")
-                        .HasComment("The id of the user who did create");
-
-                    b.Property<DateTime>("DataVenda")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("data_venda");
-
-                    b.Property<DateTime?>("DeleteAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("deleted_at")
-                        .HasComment("When this entity was deleted in this DB");
-
-                    b.Property<string>("DeletedByUserId")
-                        .HasColumnType("VARCHAR(100)")
-                        .HasColumnName("deleted_by_user_id")
-                        .HasComment("The id of the user who did the delete");
-
-                    b.Property<string>("Filial")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("filial");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted")
-                        .HasComment("The field that identifies that the entity was deleted");
-
-                    b.Property<string>("NomeCliente")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("nome_cliente");
-
-                    b.Property<long>("NumeroVenda")
-                        .HasColumnType("bigint")
-                        .HasColumnName("numero_venda");
-
-                    b.Property<DateTime?>("UpdateAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("update_at")
-                        .HasComment("When this entity was modified the last time");
-
-                    b.Property<string>("UpdatedByUserId")
-                        .HasColumnType("VARCHAR(100)")
-                        .HasColumnName("update_by_user_id")
-                        .HasComment("The id of the user who did the last modification");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("venda", (string)null);
                 });
 
             modelBuilder.Entity("ProjectTest.Domain.Entities.AcessoUsuario", b =>
@@ -321,25 +471,93 @@ namespace ProjectTest.Infrastructure.Data.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("ProjectTest.Domain.Entities.ItemVenda", b =>
+            modelBuilder.Entity("ProjectTest.Domain.Entities.Comentario", b =>
                 {
-                    b.HasOne("ProjectTest.Domain.Entities.Venda", "Venda")
-                        .WithMany("Itens")
-                        .HasForeignKey("VendaId")
+                    b.HasOne("ProjectTest.Domain.Entities.Tarefa", "Tarefa")
+                        .WithMany("Comentarios")
+                        .HasForeignKey("TarefaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ProjectTest.Domain.Entities.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Tarefa");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("ProjectTest.Domain.Entities.HistoricoAlteracao", b =>
+                {
+                    b.HasOne("ProjectTest.Domain.Entities.Tarefa", "Tarefa")
+                        .WithMany("Historico")
+                        .HasForeignKey("TarefaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Venda");
+                    b.HasOne("ProjectTest.Domain.Entities.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Tarefa");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("ProjectTest.Domain.Entities.Projeto", b =>
+                {
+                    b.HasOne("ProjectTest.Domain.Entities.Usuario", "Usuario")
+                        .WithMany("Projetos")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("ProjectTest.Domain.Entities.Tarefa", b =>
+                {
+                    b.HasOne("ProjectTest.Domain.Entities.Projeto", "Projeto")
+                        .WithMany("Tarefas")
+                        .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ProjectTest.Domain.Entities.Usuario", "Usuario")
+                        .WithMany("Tarefas")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Projeto");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("ProjectTest.Domain.Entities.Projeto", b =>
+                {
+                    b.Navigation("Tarefas");
+                });
+
+            modelBuilder.Entity("ProjectTest.Domain.Entities.Tarefa", b =>
+                {
+                    b.Navigation("Comentarios");
+
+                    b.Navigation("Historico");
                 });
 
             modelBuilder.Entity("ProjectTest.Domain.Entities.Usuario", b =>
                 {
                     b.Navigation("AcessosUsuarios");
-                });
 
-            modelBuilder.Entity("ProjectTest.Domain.Entities.Venda", b =>
-                {
-                    b.Navigation("Itens");
+                    b.Navigation("Projetos");
+
+                    b.Navigation("Tarefas");
                 });
 #pragma warning restore 612, 618
         }
